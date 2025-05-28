@@ -1,0 +1,44 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# dotenv config (API key'ini içeriyor!)
+*.env
+
+# Jupyter (ekstra)
+.ipynb_checkpoints/
+
+# macOS / Windows sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# VSCode / PyCharm gibi IDE klasörleri
+.vscode/
+.idea/
+
+# FAISS index gibi geçici dosyalar
+*.index
+*.faiss
+*.hnsw
+
+# Kullanıcı yüklemeleri ve geçici dosyalar
+*.pdf
+*.html
+*.tmp
+*.log
+
+# Chat geçmişi gibi local dosyalar
+chat_history.json
+
+# Streamlit cache
+.streamlit/
