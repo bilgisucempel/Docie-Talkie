@@ -1,7 +1,6 @@
+import streamlit as st
 import os
 import base64
-import streamlit as st
-from dotenv import load_dotenv
 import json
 
 from utils.parsing import parse_file
@@ -10,6 +9,16 @@ from utils.rag import prepare_chunks, get_context_from_question
 from utils.claude_rag_chat import ask_claude_with_context
 
 st.set_page_config(page_title="Docie-Talkie", layout="wide")
+
+api_key = st.sidebar.text_input(
+    "Please enter your Anthropic API Key:", 
+    type="password",
+    help="API anahtarınızı https://console.anthropic.com/ adresinden alabilirsiniz."
+)
+if not api_key:
+    st.sidebar.warning("API key is required to continue.")
+    st.stop()
+
 
 # sohbet yükleme kaydetme
 CHAT_FILE = "chat_history.json"
@@ -202,8 +211,8 @@ with col2:
 
         if send_clicked and chat_input.strip():
             with st.spinner("Claude düşünüyor..."):
-                context = get_context_from_question(chat_input) if st.session_state.get("document_chunks") else None
-                response = ask_claude(chat_input, context)
+                context = get_context_from_question(chat_input) if st.session_state.get("document_chunks") else []
+                response = ask_claude(chat_input, context, api_key)
 
             st.session_state.chat_history.append(("user", chat_input))
             st.session_state.chat_history.append(("assistant", response))
@@ -230,7 +239,7 @@ if uploaded_file and st.session_state.get("parsed_text") and st.session_state.ge
 
         if question:
             relevant_chunks = get_context_from_question(question)
-            context = "\\n\\n".join(relevant_chunks)
+            context = "\n\n".join(relevant_chunks)
 
             st.subheader("İlgili Parçalar:")
             for i, chunk in enumerate(relevant_chunks, 1):
@@ -238,7 +247,7 @@ if uploaded_file and st.session_state.get("parsed_text") and st.session_state.ge
                 st.code(chunk, language="markdown")
 
             with st.spinner("Claude cevap oluşturuyor..."):
-                answer = ask_claude_with_context(question, context)
+               answer = ask_claude_with_context(question, context, api_key)
 
             st.success("Cevabınız:")
             st.markdown(answer)

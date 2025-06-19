@@ -1,1 +1,8 @@
 PyMuPDF
+python-dotenv
+streamlit
+requests
+anthropic
+pymupdf
+pdfplumber
+beautifulsoup4
