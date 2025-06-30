@@ -6,3 +6,5 @@ anthropic
 pymupdf
 pdfplumber
 beautifulsoup4
+sentence-transformers
+faiss-cpu

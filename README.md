@@ -1,6 +1,8 @@
 # Docie-Talkie
 
-Docie-Talkie, kullanıcıların PDF ve HTML dosyaları üzerinden içerik bazlı sohbet yapabildiği, ayrıca basit diyalog kurabileceği bir yapay zeka destekli chatbot uygulamasıdır. Uygulama Streamlit ile geliştirilmiş ve Claude (Anthropic API) ile entegre edilmiştir.
+Docie-Talkie, Anthropic'in Claude 3 Haiku modeli tarafından desteklenen, PDF ve HTML belgeleriyle etkileşim kurmanızı sağlayan akıllı bir belge asistanıdır. Yüklediğiniz belgeler hakkında doğal dil kullanarak sorular sorabilir, ilgili bilgileri hızlıca bulabilir ve özetler alabilirsiniz.
+
+Bu proje, Retrieval Augmented Generation (RAG) prensibini kullanarak, sorularınıza yalnızca sağladığınız belge bağlamında yanıt verir.
 
 ---
 
@@ -45,14 +47,24 @@ Terminalde:
 streamlit run app.py  
 
 ### Kullanılan paketler (requirements)
-streamlit
+PyMuPDF
 python-dotenv
-pdfplumber
-pymupdf
-beautifulsoup4
+streamlit
 requests
 anthropic
+pymupdf
+pdfplumber
+beautifulsoup4
+sentence-transformers
+faiss-cpu
 
 ## Katkıda bulunma
 
 Pull requestlerinizi beklerim, iyi çalışmalar!
+
+## Notlar:
+Genel sohbet özelliği, projenin RAG odaklılığını artırmak amacıyla kaldırılmıştır.
+
+Bu proje, Streamlit'in session_state özelliğini kullanarak dosya işleme ve RAG indeksleme işlemlerinin yalnızca bir kez yapılmasını sağlar, böylece performans artırılır.
+
+Hata yönetimi, API çağrıları sırasında oluşabilecek çeşitli sorunları (ağ hataları, API hataları vb.) daha iyi ele almak için iyileştirilmiştir.
