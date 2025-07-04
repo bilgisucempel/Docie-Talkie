@@ -27,6 +27,7 @@ def ask_claude_with_context(question: str, context: str, api_key: str) -> str:
         {
             "role": "user",
             "content": f"""
+Lütfen soruyu hangi dilde aldıysanız, o dilde yanıt verin.
 **yalnızca** belirtilen bağlama dayanarak soruyu yanıtlayın.
 Eğer cevap bağlamda bulunmuyorsa, "Bu bilgiyi belgede bulamadım." şeklinde yanıtlayın.
 

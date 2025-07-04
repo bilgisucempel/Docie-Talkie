@@ -83,64 +83,60 @@ if "faiss_index" not in st.session_state:
 if "uploaded_file_id" not in st.session_state:
     st.session_state.uploaded_file_id = None
 
-col1, col2 = st.columns([1, 1])
+#Dosya Yükleyici ve İçerik Görüntüleme bölümü
+with st.expander("Dosya Yükleyici ve İçerik Görüntüleme", expanded=True):
+    uploaded_file = st.file_uploader("PDF veya HTML dosyası yükleyin:", type=["pdf", "html"], key="uploader1")
 
-with col1:
-    with st.expander("Dosya Yükleyici ve İçerik Görüntüleme", expanded=True):
-        uploaded_file = st.file_uploader("PDF veya HTML dosyası yükleyin:", type=["pdf", "html"], key="uploader1")
-
-        if uploaded_file:
-            #kontrol
-            if st.session_state.uploaded_file_id != uploaded_file.file_id:
-                st.session_state.uploaded_file_id = uploaded_file.file_id
-                file_type = uploaded_file.type.split("/")[-1]
-                with st.spinner("Dosya işleniyor..."):
-                    parsed_text = parse_file(uploaded_file, file_type)
-                    st.session_state.parsed_text = parsed_text
-                    
-                    chunks, faiss_index = prepare_chunks(parsed_text)
-                    st.session_state.document_chunks = chunks
-                    st.session_state.faiss_index = faiss_index
-                    st.success("Dosya başarıyla işlendi!")
-                st.rerun()
-            
-            st.subheader("Dosyanızın İçeriği:")
-            st.text_area("İçerik", st.session_state.parsed_text, height=300)
-        else:
-            if st.session_state.uploaded_file_id is not None:
-                st.session_state.uploaded_file_id = None
-                st.session_state.parsed_text = ""
-                st.session_state.document_chunks = None
-                st.session_state.faiss_index = None
-                st.rerun()
+    if uploaded_file:
+        if st.session_state.uploaded_file_id != uploaded_file.file_id:
+            st.session_state.uploaded_file_id = uploaded_file.file_id
+            file_type = uploaded_file.type.split("/")[-1]
+            with st.spinner("Dosya işleniyor..."):
+                parsed_text = parse_file(uploaded_file, file_type)
+                st.session_state.parsed_text = parsed_text
+                
+                chunks, faiss_index = prepare_chunks(parsed_text)
+                st.session_state.document_chunks = chunks
+                st.session_state.faiss_index = faiss_index
+                st.success("Dosya başarıyla işlendi!")
+            st.rerun()
+        
+        st.subheader("Dosyanızın İçeriği:")
+        st.text_area("İçerik", st.session_state.parsed_text, height=300)
+    else:
+        if st.session_state.uploaded_file_id is not None:
+            st.session_state.uploaded_file_id = None
+            st.session_state.parsed_text = ""
+            st.session_state.document_chunks = None
+            st.session_state.faiss_index = None
+            st.rerun()
 
 #RAG
-with col2:
-    if st.session_state.document_chunks is not None and st.session_state.faiss_index is not None:
-        with st.expander("Belgeye Dayalı Soru-Cevap (RAG)", expanded=True):
-            question = st.text_input("Bu belge hakkında bir soru sorun:", key="rag_input")
+if st.session_state.document_chunks is not None and st.session_state.faiss_index is not None:
+    with st.expander("Belgeye Dayalı Soru-Cevap (RAG)", expanded=True):
+        question = st.text_input("Bu belge hakkında bir soru sorun:", key="rag_input")
 
-            if question:
-                with st.spinner("İlgili parçalar aranıyor..."):
-                    relevant_chunks = get_context_from_question(question, st.session_state.document_chunks, st.session_state.faiss_index)
-                
-                context = "\n\n".join(relevant_chunks)
+        if question:
+            with st.spinner("İlgili parçalar aranıyor..."):
+                relevant_chunks = get_context_from_question(question, st.session_state.document_chunks, st.session_state.faiss_index)
+            
+            context = "\n\n".join(relevant_chunks)
 
-                if relevant_chunks:
-                    st.subheader("İlgili Parçalar:")
-                    for i, chunk in enumerate(relevant_chunks, 1):
-                        st.markdown(f"**{i}. Parça:**")
-                        st.code(chunk, language="markdown")
-                else:
-                    st.info("Bu soruyla ilgili belge içinde yeterli bağlam bulunamadı.")
+            if relevant_chunks:
+                st.subheader("İlgili Parçalar:")
+                for i, chunk in enumerate(relevant_chunks, 1):
+                    st.markdown(f"**{i}. Parça:**")
+                    st.code(chunk, language="markdown")
+            else:
+                st.info("Bu soruyla ilgili belge içinde yeterli bağlam bulunamadı.")
 
-                with st.spinner("Claude cevap oluşturuyor..."):
-                    answer = ask_claude_with_context(question, context, api_key)
+            with st.spinner("Claude cevap oluşturuyor..."):
+                answer = ask_claude_with_context(question, context, api_key)
 
-                st.success("Cevabınız:")
-                st.markdown(answer)
+            st.success("Cevabınız:")
+            st.markdown(answer)
 
-                if st.button("Cevabı Kopyala", key="copy_rag_answer"):
-                    st.code(answer, language='markdown')
-    else:
-        st.info("Lütfen sol taraftan bir belge yükleyin ve işlenmesini bekleyin.")
+            if st.button("Cevabı Kopyala", key="copy_rag_answer"):
+                st.code(answer, language='markdown')
+else:
+    st.info("Lütfen yukarıdan bir belge yükleyin ve işlenmesini bekleyin.")

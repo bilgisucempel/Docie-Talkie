@@ -36,7 +36,7 @@ def prepare_chunks(text: str, chunk_size: int = 500):
     
     return chunks, index
 
-def get_context_from_question(question: str, document_chunks: list, faiss_index, top_k: int = 3):
+def get_context_from_question(question: str, document_chunks: list, faiss_index, top_k: int = 5):
     """
     Verilen soru için FAISS indeksini kullanarak en alakalı metin parçalarını bulur.
     Global değişkenler yerine, verilen belge parçalarını ve FAISS indeksini parametre olarak alır.
